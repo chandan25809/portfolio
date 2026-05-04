@@ -7,6 +7,10 @@ export const metadata: Metadata = {
   title: `${PROFILE.shortName} Abhishek — Portfolio`,
   description: `${PROFILE.tagline} SWE × LLMs, RAG, agentic workflows.`,
   applicationName: "Overworld Portfolio",
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    shortcut: "/favicon.svg",
+  },
   authors: [{ name: PROFILE.name }],
   keywords: [
     "Chandan Abhishek",
