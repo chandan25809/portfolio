@@ -1,0 +1,523 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --paper: #fdf8ed;
+  --ink: #1d2b4d;
+  --grid-line: rgba(29, 43, 77, 0.07);
+  --chunk-ink: #1e2f2d;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply font-sans text-chunk-ink antialiased;
+  margin: 0;
+  line-height: 1.65;
+  background: transparent;
+  cursor: url("/mc-cursor.svg") 2 2, crosshair;
+}
+
+/* Optional: graph paper for print / legacy */
+.bg-graph-paper {
+  background-color: var(--paper);
+  background-image: linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 28px 28px;
+  background-attachment: fixed;
+}
+
+/* —— Minecraft-style sky + passing voxel clouds —— */
+
+.mc-world-root,
+.ide-page-root {
+  background-color: #5998dc;
+  background-image: linear-gradient(
+    180deg,
+    #5695d8 0%,
+    #6bb8ff 16%,
+    #86cafd 38%,
+    #aaddfc 56%,
+    #c9e9fc 74%,
+    #dbeefa 89%,
+    #e9f6ff 100%
+  );
+}
+
+.mc-sky-band {
+  background-image: radial-gradient(
+    ellipse 120% 85% at 50% -8%,
+    rgba(255, 255, 255, 0.28) 0%,
+    transparent 55%
+  );
+}
+
+.mc-sky-pixel-veil {
+  background-image: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(20, 50, 80, 0.03) 3px,
+      rgba(20, 50, 80, 0.03) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 3px,
+      rgba(20, 50, 80, 0.03) 3px,
+      rgba(20, 50, 80, 0.03) 4px
+    );
+  opacity: 0.55;
+  mix-blend-mode: multiply;
+}
+
+.mc-marquee-chunk {
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(3rem, 10vw, 5.5rem);
+  padding-right: clamp(3rem, 10vw, 5.5rem);
+  flex-shrink: 0;
+}
+
+.mc-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: mc-marquee-scroll linear infinite;
+  will-change: transform;
+}
+
+/* —— Terrain: grass motion + dirt drift + villager (reduced-motion aware) —— */
+
+@keyframes mc-terrain-grass-breathe {
+  0%,
+  100% {
+    filter: brightness(1) saturate(1);
+  }
+  50% {
+    filter: brightness(1.09) saturate(1.1);
+  }
+}
+
+@keyframes mc-terrain-grass-sway {
+  0%,
+  100% {
+    transform: translateX(0) skewX(0deg);
+  }
+  50% {
+    transform: translateX(-2px) skewX(-0.55deg);
+  }
+}
+
+@keyframes mc-terrain-grass-tuft-drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-28px);
+  }
+}
+
+.mc-terrain-grass-tufts {
+  background-image: repeating-linear-gradient(
+    88deg,
+    transparent 0,
+    transparent 5px,
+    rgba(30, 60, 18, 0.22) 5px,
+    rgba(30, 60, 18, 0.22) 6px,
+    transparent 6px,
+    transparent 14px
+  );
+  animation: mc-terrain-grass-tuft-drift 14s linear infinite;
+}
+
+@keyframes mc-terrain-dirt-drift {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 240px 0;
+  }
+}
+
+@keyframes mc-terrain-villager-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+/* Patrol: ping-pong along grass (no horizontal flip — flip mirrored past the left edge and clipped) */
+@keyframes mc-terrain-villager-patrol {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(56px);
+  }
+}
+
+.mc-terrain-villager-patrol {
+  transform-origin: left bottom;
+  animation: mc-terrain-villager-patrol 10.5s ease-in-out infinite;
+}
+
+.mc-terrain-villager-bob {
+  display: inline-flex;
+  animation: mc-terrain-villager-bob 2.75s ease-in-out infinite;
+}
+
+@keyframes mc-terrain-villager-a {
+  0%,
+  49.9% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes mc-terrain-villager-b {
+  0%,
+  49.9% {
+    opacity: 0;
+  }
+  50%,
+  100% {
+    opacity: 1;
+  }
+}
+
+.mc-terrain-grass {
+  transform-origin: 50% 100%;
+  animation: mc-terrain-grass-breathe 5.5s ease-in-out infinite,
+    mc-terrain-grass-sway 7.2s ease-in-out infinite;
+}
+
+.mc-terrain-dirt {
+  background-size: 240px 100%;
+  animation: mc-terrain-dirt-drift 72s linear infinite;
+}
+
+.mc-terrain-villager-frame-a {
+  animation: mc-terrain-villager-a 1.05s steps(1, end) infinite;
+}
+
+.mc-terrain-villager-frame-b {
+  opacity: 0;
+  animation: mc-terrain-villager-b 1.05s steps(1, end) infinite;
+}
+
+/* Blocky overworld cursor (original SVG asset); coarse pointers reset below */
+a[href],
+button:not(:disabled),
+[role="button"],
+summary,
+label[for],
+select {
+  cursor: url("/mc-cursor.svg") 2 2, pointer;
+}
+
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="url"],
+textarea {
+  cursor: text !important;
+}
+
+input:disabled,
+button:disabled {
+  cursor: not-allowed !important;
+}
+
+@media (pointer: coarse) {
+  body,
+  a[href],
+  button:not(:disabled),
+  [role="button"],
+  summary,
+  label[for],
+  select {
+    cursor: auto !important;
+  }
+}
+
+@keyframes mc-marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.chunk-titlebar {
+  border: 3px solid var(--chunk-ink);
+  border-radius: 14px;
+  background: linear-gradient(180deg, #f5fbff 0%, #ddedf7 100%);
+  box-shadow: 5px 5px 0 var(--chunk-ink);
+}
+
+.chunk-panel {
+  border: 3px solid var(--chunk-ink);
+  border-radius: 14px;
+  background: rgba(255, 254, 248, 0.94);
+  box-shadow: 5px 5px 0 var(--chunk-ink);
+}
+
+.font-journal {
+  font-family: "Caveat", cursive;
+}
+
+.card-journal {
+  border: 3px solid var(--chunk-ink);
+  border-radius: 14px;
+  background: #fffef8;
+  box-shadow: 5px 5px 0 var(--chunk-ink);
+}
+
+.btn-journal {
+  @apply inline-flex items-center justify-center px-5 py-2.5 border-[3px] border-chunk-ink shadow-chunk-sm bg-chunk-cream font-mono text-sm font-semibold text-chunk-ink transition-transform hover:-translate-y-0.5 active:translate-y-0 active:shadow-none rounded-xl;
+}
+
+.btn-journal-primary {
+  @apply btn-journal bg-chunk-grass text-white border-chunk-ink;
+}
+
+.ide-page-title {
+  @apply font-bold text-chunk-ink text-2xl sm:text-3xl tracking-tight;
+}
+
+.ide-page-sub {
+  @apply font-mono text-[10px] sm:text-[11px] text-chunk-ink/70 mt-1;
+}
+
+.tape-corner {
+  position: relative;
+}
+.tape-corner::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  width: 72px;
+  height: 18px;
+  background: linear-gradient(
+    90deg,
+    rgba(95, 168, 74, 0.35),
+    rgba(142, 202, 230, 0.45)
+  );
+  border: 1px solid rgba(30, 47, 45, 0.12);
+  pointer-events: none;
+}
+
+/* —— Landing animations ————————————————————————————————— */
+
+@keyframes tech-terminal-in {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tech-nav-chip-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tech-caret-blink {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  50%,
+  95% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.tech-terminal-pop {
+  animation: tech-terminal-in 0.72s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes landing-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes landing-slot-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.88) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes landing-float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes landing-shimmer-badge {
+  0% {
+    opacity: 0.75;
+    box-shadow: 0 0 0 1px rgba(95, 168, 74, 0.4);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 12px rgba(129, 200, 90, 0.45);
+  }
+  100% {
+    opacity: 0.75;
+    box-shadow: 0 0 0 1px rgba(95, 168, 74, 0.4);
+  }
+}
+
+.landing-pop-in {
+  opacity: 0;
+  animation: landing-rise 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.landing-slot {
+  opacity: 0;
+  animation: landing-slot-pop 0.55s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+}
+
+.landing-hero-float {
+  animation: landing-float-soft 4.5s ease-in-out infinite;
+}
+
+.landing-resume-glitch {
+  animation: landing-shimmer-badge 3s ease-in-out infinite;
+}
+
+.tech-caret-blink::after {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 14px;
+  margin-left: 2px;
+  background: rgba(125, 211, 190, 0.95);
+  vertical-align: -2px;
+  animation: tech-caret-blink 1s steps(2, jump-none) infinite;
+}
+
+.reveal-visible.tech-chip-row > .tech-nav-chip:nth-child(1) {
+  animation: tech-nav-chip-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0ms both;
+}
+.reveal-visible.tech-chip-row > .tech-nav-chip:nth-child(2) {
+  animation: tech-nav-chip-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) 48ms both;
+}
+.reveal-visible.tech-chip-row > .tech-nav-chip:nth-child(3) {
+  animation: tech-nav-chip-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) 96ms both;
+}
+.reveal-visible.tech-chip-row > .tech-nav-chip:nth-child(4) {
+  animation: tech-nav-chip-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) 144ms both;
+}
+.reveal-visible.tech-chip-row > .tech-nav-chip:nth-child(5) {
+  animation: tech-nav-chip-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) 192ms both;
+}
+.reveal-visible.tech-chip-row > .tech-nav-chip:nth-child(6) {
+  animation: tech-nav-chip-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) 240ms both;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(var(--reveal-dist, 28px));
+  transition:
+    opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mc-marquee-track {
+    animation: none !important;
+    transform: translateX(-12%);
+  }
+  .mc-terrain-grass,
+  .mc-terrain-grass-tufts,
+  .mc-terrain-dirt,
+  .mc-terrain-villager-patrol,
+  .mc-terrain-villager-bob,
+  .mc-terrain-villager-frame-a,
+  .mc-terrain-villager-frame-b {
+    animation: none !important;
+    filter: none !important;
+    transform: none !important;
+  }
+  .mc-terrain-villager-frame-a {
+    opacity: 1 !important;
+  }
+  .mc-terrain-villager-frame-b {
+    opacity: 0 !important;
+  }
+  .landing-pop-in,
+  .landing-slot,
+  .landing-hero-float,
+  .landing-resume-glitch {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .landing-hotbar-enter {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+  .tech-terminal-pop,
+  .tech-caret-blink::after,
+  .reveal-visible.tech-chip-row > .tech-nav-chip {
+    animation: none !important;
+  }
+  .tech-caret-blink::after {
+    opacity: 1;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
