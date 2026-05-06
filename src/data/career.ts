@@ -60,7 +60,7 @@ export const PROFILE = {
   education: {
     school: "University of Florida",
     degree: "Master of Science, Computer Science",
-    gpa: "3.95",
+    gpa: "3.96",
     dates: "Aug 2024 – May 2026",
   },
   fastFacts: [
