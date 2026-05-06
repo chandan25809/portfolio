@@ -191,8 +191,8 @@ export const ROLES: Role[] = [
       "FastAPI and Rails on AWS for 1M+ monthly users; Grafana; internal LLM+RAG search and conversational booking; demand forecasting at 78% accuracy.",
     highlights: [
       "Built backend microservices using FastAPI and Ruby on Rails on AWS, powering recommendation, forecasting, and analytics APIs serving 1M+ monthly users, and implemented monitoring and observability using Grafana dashboards to track service health, latency, and system performance.",
-      "Developed an internal LLM-powered search engine for the logistics sales team to query large volumes of trade rules, regulations, and shipment documentation using Retrieval-Augmented Generation (RAG), significantly reducing manual lookup time.",
-      "Extended the search engine into a conversational booking bot that enabled sales agents to initiate and complete shipment bookings through natural language, integrating with backend logistics APIs.",
+      "Developed an internal LLM-powered search platform for the logistics sales team using Retrieval-Augmented Generation (RAG) to query large volumes of trade regulations, shipment documentation, and operational data, significantly reducing manual lookup time and improving workflow efficiency.",
+      "Extended the platform into a conversational AI booking assistant that enabled sales agents to initiate and complete shipment bookings through natural language interactions, integrating seamlessly with backend logistics APIs and operational workflows.",
       "Designed a custom demand forecasting system for container shipping logistics, incorporating seasonality and trend modeling to achieve 78% prediction accuracy.",
       "Reduced excess inventory by 20% and shipment cancellations by 37% improving logistics planning and capacity utilization.",
     ],
